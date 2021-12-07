@@ -18,6 +18,19 @@ import (
 	"unicode/utf8"
 )
 
+// splitspace slices p into all substrings separated by any number of spaces
+// or tabs. Spaces or tabs wrapped in double-quotes are preserved.
+//
+// For example, the given string
+//
+//     `     "Hello, world"     [0-9]+   foo    `
+//
+// would be sliced into,
+//
+//    ["Hello, world", "[0-9]+", "foo"]
+//
+// double-quotes used to preserved spaces or tabs are dropped in the final
+// slice.
 func splitspace(p []byte) []string {
 	a := make([]string, 0, 5)
 
