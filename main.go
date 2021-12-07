@@ -108,12 +108,19 @@ func (e UnmarshalError) Error() string {
 }
 
 type String struct {
-	s string
+	re   *regexp.Regexp
+	s    string
+	repl string
 }
 
-func (s *String) Format(_ string) {}
+func (s *String) Format(repl string) {
+	s.repl = repl
+}
 
 func (s *String) MarshalJSON() ([]byte, error) {
+	if s.repl != "" {
+		s.s = s.re.ReplaceAllString(s.s, s.repl)
+	}
 	return json.Marshal(s.s)
 }
 
@@ -127,7 +134,7 @@ func UnmarshalString(re *regexp.Regexp) UnmarshalFunc {
 				}
 			}
 		}
-		return &String{s: s}, nil
+		return &String{re: re, s: s}, nil
 	}
 }
 
