@@ -436,7 +436,7 @@ func (p *Parser) nextrecord() error {
 	p.recpos = 0
 
 	p.pos.line++
-	p.pos.col = 0
+	p.pos.col = 1
 
 	return nil
 }
@@ -448,13 +448,20 @@ func (p *Parser) next() (string, string) {
 		return "", ""
 	}
 
-	header := p.headers[p.recpos]
-	col := p.record[p.recpos]
+	hdr := p.headers[p.recpos]
+	val := p.record[p.recpos]
+
+	// Width of column value to increment column position by.
+	w := len(val)
+
+	if w == 0 {
+		w = 1
+	}
 
 	p.recpos++
+	p.pos.col += w
 
-	p.pos.col += len(header) - 1
-	return header, col
+	return hdr, val
 }
 
 // init will initialize the parser by reading the first line in the underlying
