@@ -252,6 +252,7 @@ func parsebase(s string) (int, error) {
 	}
 
 	bases := map[int64]struct{}{
+		0:  {}, // valid for strconv.ParseInt
 		2:  {},
 		8:  {},
 		10: {},
