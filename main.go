@@ -611,7 +611,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "%s,%d:%d - %s\n", fname, line, col, msg)
 		}
 
-		go func() {
+		go func(fname string) {
 			sems <- struct{}{}
 
 			defer func() {
@@ -656,7 +656,7 @@ func main() {
 				return
 			}
 			fmt.Println(outname)
-		}()
+		}(fname)
 	}
 
 	go func() {
