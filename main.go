@@ -32,16 +32,16 @@ import (
 // double-quotes used to preserved spaces or tabs are dropped in the final
 // slice.
 func splitspace(p []byte) []string {
-	a := make([]string, 0, 5)
+	a := make([]string, 0)
 
 	var (
 		i int
 		r rune
-		w int
+		w int  // width of current rune in string
 
 		quoted bool
 		trim   bool
-		start  int = -1
+		start  int = -1 // where in the string we found a non-space character
 	)
 
 	for i < len(p) {
@@ -61,6 +61,8 @@ func splitspace(p []byte) []string {
 
 		i += w
 
+		// Set trim to true so we don't include the quotation marks in the
+		// final string.
 		if r == '"' {
 			quoted = !quoted
 			trim = true
