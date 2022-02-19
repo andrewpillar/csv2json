@@ -93,7 +93,9 @@ patterns that can be used for each type.
   * `time` -  The layout of the time in the CSV file. This uses the reference
   date `Mon Jan 2 15:04:05 MST 2006` from the standard library. For more
   information on how to use different date layouts see the Go documentation
-  for the `time` package.
+  for the [time][time] package.
+
+[time]: https://pkg.go.dev/time#pkg-constants
 
 **`format`**
 
