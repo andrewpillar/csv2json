@@ -68,11 +68,40 @@ delimited lines in the following format,
     # Comment line
     column  type  pattern  format  destination
 
-* `column` - the name of the column in the CSV file. This is required.
-* `type` - the type of the column's value in the CSV file. This is required.
-* `pattern` - the pattern of the column's value in the CSV file. This will
-vary depending on the type of the column.
-* `format` - the output format of the column's value when written to JSON. This
-will vary depending on the type of the column.
-* `destination` - the name of the field when written to JSON. If not given then
-the original CSV column name is used.
+**`column`** - required
+
+The column field describes the name of the column in the CSV File. This is
+required.
+
+**`type`** - required
+
+This describes the type of the column's value in the CSV file. This is required
+and should be one of `string`, `bool`, `int`, `float`, or `time`.
+
+**`pattern`**
+
+This describes the input pattern of the column's value in the CSV file. This
+will vary depending on the type of the column. Detailed below are the different
+patterns that can be used for each type.
+
+  * `string` - The pattern for a string is a regular expression. This will be
+  applied to the input strings to the CSV file. Any strings that do not match
+  the given pattern will be rejected, and an error will be reported.
+
+  * `int` - The base for the integer being parsed. This can be either `0`,
+  `2`, `8`, `10`, or `16`. By default numbers are parsed as base `10`.
+
+  * `time` -  The layout of the time in the CSV file. This uses the reference
+  date `Mon Jan 2 15:04:05 MST 2006` from the standard library. For more
+  information on how to use different date layouts see the Go documentation
+  for the `time` package.
+
+**`format`**
+
+This describes the output format of the column's value when written to JSON.
+This will vary depending on the column's type.
+
+**`destination`**
+
+This describes the name of the field that should be written to in the output
+JSON. If not given, then the original CSV column name is used.
