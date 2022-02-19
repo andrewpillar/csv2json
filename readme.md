@@ -88,7 +88,9 @@ patterns that can be used for each type.
   the given pattern will be rejected, and an error will be reported.
 
   * `int` - The base for the integer being parsed. This can be either `0`,
-  `2`, `8`, `10`, or `16`. By default numbers are parsed as base `10`.
+  `2`, `8`, `10`, or `16`. By default numbers are parsed as base `10`. When
+  set to `0`, the base is implied by the prefix of the string, for example,
+  `0b` for binary, `0o` for octal, etc.
 
   * `time` -  The layout of the time in the CSV file. This uses the reference
   date `Mon Jan 2 15:04:05 MST 2006` from the standard library. For more
