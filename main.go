@@ -140,6 +140,33 @@ func UnmarshalString(re *regexp.Regexp) UnmarshalFunc {
 	}
 }
 
+type Bool struct {
+	b bool
+}
+
+func (b Bool) Format(_ string) {}
+
+func (b Bool) MarshalJSON() ([]byte, error) {
+	return json.Marshal(b.b)
+}
+
+var booltab = map[string]bool{
+	"true":  true,
+	"false": false,
+}
+
+func UnmarshalBool(s string) (Value, error) {
+	b, ok := booltab[s]
+
+	if !ok {
+		return nil, UnmarshalError{
+			Type: "bool",
+			Err:  errors.New("invalid boolean value: " + s),
+		}
+	}
+	return Bool{b: b}, nil
+}
+
 type Int struct {
 	n int
 }
@@ -346,6 +373,8 @@ func (s *Schema) Load(fname string) error {
 				}
 				unmarshal = UnmarshalString(re)
 			}
+		case "bool":
+			unmarshal = UnmarshalBool
 		case "int":
 			base := 10
 
