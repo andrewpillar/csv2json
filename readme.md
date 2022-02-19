@@ -8,7 +8,6 @@ be skipped over.
 
 * [Quick start](#quick-start)
 * [Schema file](#schema-file)
-  * [Types](#types)
 
 ## Quick start
 
