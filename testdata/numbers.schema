@@ -1,0 +1,4 @@
+binary  int  2
+octal   int  8
+decimal int  10
+hex     int  16

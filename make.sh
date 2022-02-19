@@ -6,4 +6,5 @@ set -e
 
 set -x
 
+go test -cover
 go build -o bin/csv2json

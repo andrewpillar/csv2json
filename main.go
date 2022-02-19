@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"strconv"
@@ -112,7 +113,7 @@ func (e UnmarshalError) Error() string {
 type String struct {
 	re   *regexp.Regexp
 	s    string
-	repl string
+	repl string // Replacement string used against the underlying regex.
 }
 
 func (s *String) Format(repl string) {
@@ -371,8 +372,8 @@ func (s *Schema) Load(fname string) error {
 						}
 					}
 				}
-				unmarshal = UnmarshalString(re)
 			}
+			unmarshal = UnmarshalString(re)
 		case "bool":
 			unmarshal = UnmarshalBool
 		case "int":
@@ -598,8 +599,10 @@ func (p *Parser) Parse(out io.Writer) error {
 	return nil
 }
 
-func main() {
-	argv0 := os.Args[0]
+var errTooFewArgs = errors.New("too few arguments")
+
+func run(args []string) error {
+	argv0 := args[0]
 
 	var (
 		schema string
@@ -609,19 +612,18 @@ func main() {
 	fs := flag.NewFlagSet(argv0, flag.ExitOnError)
 	fs.StringVar(&schema, "s", "", "the schema file to use")
 	fs.StringVar(&delim, "d", ",", "the csv delimeter")
-	fs.Parse(os.Args[1:])
+	fs.Parse(args[1:])
 
 	d, _ := utf8.DecodeRuneInString(delim)
 
 	if d == utf8.RuneError {
-		fmt.Fprintf(os.Stderr, "%s: invalid utf-8 character for delimeter, must be single character\n", argv0)
-		os.Exit(1)
+		return errors.New("invalid utf-8 character for delimeter, must be a single character\n")
 	}
 
-	args := fs.Args()
+	args = fs.Args()
 
 	if len(args) < 1 {
-		fmt.Fprintf(os.Stderr, "%s [-d delim, -s schema] <file,...>\n", argv0)
+		return errTooFewArgs
 		os.Exit(1)
 	}
 
@@ -659,7 +661,7 @@ func main() {
 
 			defer f.Close()
 
-			outname := f.Name()
+			outname := filepath.Base(f.Name())
 
 			if strings.HasSuffix(outname, ".csv") {
 				outname = outname[:len(outname)-4]
@@ -695,14 +697,29 @@ func main() {
 		close(errs)
 	}()
 
-	code := 0
+	errc := 0
 
 	for err := range errs {
 		fmt.Fprintf(os.Stderr, "%s: %s\n", argv0, err)
-		code = 1
+		errc++
 	}
 
-	if code != 0 {
-		os.Exit(code)
+	if errc > 0 {
+		return errors.New("encountered errors during generation")
+	}
+	return nil
+}
+
+func main() {
+	argv0 := os.Args[0]
+
+	if err := run(os.Args); err != nil {
+		if errors.Is(err, errTooFewArgs) {
+			fmt.Fprintf(os.Stderr, "%s [-d delim, -s schema] <file,...>\n", argv0)
+			os.Exit(1)
+		}
+
+		fmt.Fprintf(os.Stderr, "%s: %s\n", argv0, err)
+		os.Exit(1)
 	}
 }
